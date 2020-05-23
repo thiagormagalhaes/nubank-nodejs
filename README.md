@@ -11,13 +11,11 @@ Acesse seus extratos do Nubank pelo NodeJS ([Baseado na versão py](https://gith
 yarn install
 ```
 
-## Utilizando
-
-### Ponto de atenção
+## Ponto de atenção
 O Nubank pode trancar a sua conta por 72 horas caso detecte algum comportamento anormal !!
 Por conta disso, evite enviar muitas requisições. 
 
-### Configuração
+## Configuração
 Crie um arquivo `.env` na raiz do projeto, adicionando seu CPF (sem pontos ou traços) e sua senha. Por exemplo:
 ```js
 module.exports = {
@@ -26,11 +24,25 @@ module.exports = {
 }
 ```
 
-#### Cartão de Crédito (via terminal)
+## Como funciona?
+
+#### Cartão de Crédito
 
 Primeiro é necessário gerar um QRCode e fazer a autenticação pelo aplicativo da Nubank. O código a baixo irá gerar a string de validação e o QRCode para ser lido. 
 
 É necessário copiar essa string de validação para usar na autenticação.
+
+Após fazer a leitura do QRCode pelo aplicativo da Nubank. Coloque a string na função de autenticação.
+
+## Utilizando (via browser)
+
+```js
+  // Irei adicionar depois como fazer isso
+```
+
+## Utilizando (via terminal)
+
+Leitura do QRCode
 
 ```js
 const Nubank = require('./nubank/nubank')
@@ -46,7 +58,7 @@ async function main () {
   await nu.get_qr_code_terminal()
 ```
 
-Após fazer a leitura do QRCode pelo aplicativo da Nubank. Coloque a string na função de autenticação.
+Autenticação na Nubank após a leitura do QRCode (lembrar de adicionar a string gerada)
 
 ```js
 const Nubank = require('./nubank/nubank')
