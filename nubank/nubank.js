@@ -84,9 +84,8 @@ module.exports = class Nubank {
 
   }
 
-  async get_qr_code_terminal () {
+  async get_qr_code () {
     this.uuid = uuidv4()
-    console.log(this.uuid)
     qrcode.generate(this.uuid, {small: true})
     return this.uuid
   }
