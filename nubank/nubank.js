@@ -2,7 +2,6 @@ const { v4: uuidv4 } = require('uuid');
 
 const axios  = require('axios')
 const lib    = require('../config/lib')
-const fs     = require('fs')
 const qrcode = require('qrcode-terminal')
 
 module.exports = class Nubank {
@@ -16,6 +15,7 @@ module.exports = class Nubank {
   query_url = null
   bills_url = null
   uuid = null
+  refresh_token_before = null
   PATH = 'auth_data.json'
 
   headers = {
@@ -104,12 +104,12 @@ module.exports = class Nubank {
   async authenticate (cpf, password, uuid) {
     if (uuid)
       this.uuid = uuid
-
-    if (!this.uuid)
+    else {
       return {
         status: 404,
         statusText: 'QRCode não foi gerado'
       }
+    }
 
     let auth_data = await this.password_auth(cpf, password)
 
@@ -118,6 +118,16 @@ module.exports = class Nubank {
     const access = await this.access_token()
 
     return access
+  }
+
+  async authenticate_with_qr_code (cpf, password) {
+    const uuid = await nu.get_qr_code()
+
+    await lib.press_any_key('Pressione alguma tecla quando terminar de ler o QRCode pelo app da Nubank')
+
+    const authenticate = await nu.authenticate(env.CPF, env.PASS, uuid)
+
+    return authenticate
   }
 
   async get_card_feed () {
