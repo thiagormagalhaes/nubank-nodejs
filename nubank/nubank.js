@@ -121,11 +121,11 @@ module.exports = class Nubank {
   }
 
   async authenticate_with_qr_code (cpf, password) {
-    const uuid = await nu.get_qr_code()
+    const uuid = await this.get_qr_code()
 
     await lib.press_any_key('Pressione alguma tecla quando terminar de ler o QRCode pelo app da Nubank')
 
-    const authenticate = await nu.authenticate(env.CPF, env.PASS, uuid)
+    const authenticate = await this.authenticate(cpf, password, uuid)
 
     return authenticate
   }

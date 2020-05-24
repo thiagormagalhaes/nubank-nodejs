@@ -7,7 +7,7 @@ async function main () {
   await nu.start()
 
   // Função de autenticação com QRCode
-  const authenticate = await nu.authenticate_with_qr_code(env.CPF, env.PASS, uuid)
+  const authenticate = await nu.authenticate_with_qr_code(env.CPF, env.PASS)
 
   // Imprime um JSON de reposta, informando se a autenticação foi realizada com sucesso
   console.log(authenticate)
