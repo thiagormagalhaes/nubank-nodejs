@@ -7,7 +7,7 @@ async function main () {
   await nu.start()
 
   // Função de autenticação com QRCode
-  const authenticate = await nu.authenticate_with_qr_code(env.CPF, env.PASS)
+  const authenticate = await nu.authenticate_with_qr_code(env.CPF, env.PASS, true)
 
   // Imprime um JSON de reposta, informando se a autenticação foi realizada com sucesso
   console.log(authenticate)
@@ -17,6 +17,7 @@ async function main () {
 
   // Imprimir no console
   console.log(get_card_feed)
+
   // Salvar em arquivo
   lib.write_file(get_card_feed, 'card_feed.js')
 }

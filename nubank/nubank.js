@@ -16,12 +16,15 @@ module.exports = class Nubank {
   bills_url = null
   uuid = null
   refresh_token_before = null
+  headers = null
   PATH = 'auth_data.json'
 
-  headers = {
-    'Content-Type': 'application/json',
-    'X-Correlation-Id': 'WEB-APP.pewW9',
-    'User-Agent': 'pynubank Client - https://github.com/andreroggeri/pynubank',
+  async set_headers () {
+    this.headers = {
+      'Content-Type': 'application/json',
+      'X-Correlation-Id': 'WEB-APP.pewW9',
+      'User-Agent': 'nubank nodejs Client - https://github.com/thiagormagalhaes/nubank-nodejs',
+    }
   }
 
   async start () {
@@ -31,6 +34,8 @@ module.exports = class Nubank {
   }
 
   async password_auth(cpf, password) {
+    await this.set_headers()
+
     let payload = {
         "grant_type": "password",
         "login": cpf,
@@ -101,33 +106,102 @@ module.exports = class Nubank {
     this.bills_url = data['_links']['bills_summary']['href']
   }
 
-  async authenticate (cpf, password, uuid) {
+  async authenticate (cpf, password, uuid, save) {
     if (uuid)
       this.uuid = uuid
     else {
       return {
         status: 404,
-        statusText: 'QRCode não foi gerado'
+        statusText: 'QRCode não foi encontrado'
       }
     }
 
     let auth_data = await this.password_auth(cpf, password)
 
+    if (save)
+      lib.write_file({'date': auth_data.refresh_before}, 'refresh_before.json')
+
     this.headers['Authorization'] = 'Bearer ' + auth_data['access_token']
 
     const access = await this.access_token()
 
+    if (save) {
+      lib.write_file(this.headers, 'headers.json')
+      lib.write_file({
+        feed_url: this.feed_url,
+        query_url: this.query_url,
+        bills_url: this.bills_url
+      }, 'urls.json')
+    }
+
     return access
   }
 
-  async authenticate_with_qr_code (cpf, password) {
-    const uuid = await this.get_qr_code()
+  async load_refresh_before () {
+    let refresh_before = await lib.read_file('refresh_before.json')
 
-    await lib.press_any_key('Pressione alguma tecla quando terminar de ler o QRCode pelo app da Nubank')
+    try {
+      if (refresh_before != {}) {
+        this.refresh_token_before = new Date(refresh_before.date)
+        return true
+      } else
+        return false
+    } catch (err) {
+      return false
+    }
+  }
 
-    const authenticate = await this.authenticate(cpf, password, uuid)
+  async load_headers () {
+    this.headers = await lib.read_file('headers.json')
 
-    return authenticate
+    try {
+      if (this.headers != null && this.headers.Authorization)
+        return true
+      else
+        return false
+    } catch (err) {
+      return false
+    }
+  }
+
+  async load_urls () {
+    const url = await lib.read_file('urls.json')
+
+    this.feed_url = url.feed_url
+    this.query_url = url.query_url
+    this.bills_url = url.bills_url
+  }
+
+  async authenticate_with_qr_code (cpf, password, save) {
+    let new_authenticate = true
+
+    if (save) {
+      const load_refresh_before = await this.load_refresh_before()
+      const now = new Date()
+
+      if (load_refresh_before && this.refresh_token_before > now) {
+        new_authenticate = await this.load_headers()
+        new_authenticate = !new_authenticate
+      }
+
+      if (!new_authenticate)
+        await this.load_urls()
+    }
+
+    if (new_authenticate) {
+      const uuid = await this.get_qr_code()
+
+      await lib.press_any_key('Pressione alguma tecla quando terminar de ler o QRCode pelo app da Nubank')
+
+      const authenticate = await this.authenticate(cpf, password, uuid, save)
+
+      return authenticate
+    } else {
+      return {
+        status: 200,
+        statusText: 'OK'
+      }
+    }
   }
 
   async get_card_feed () {

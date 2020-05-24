@@ -20,7 +20,12 @@ async function press_any_key (message) {
 }
 
 async function read_file (filename) {
-  let rawdata = fs.readFileSync(PATH + filename);
+  const path = PATH + filename
+
+  if(!fs.existsSync(path))
+    return {}
+
+  let rawdata = fs.readFileSync(path);
   return JSON.parse(rawdata)
 }
 
