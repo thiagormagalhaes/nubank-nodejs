@@ -4,16 +4,16 @@
 
 Acesse seus extratos do Nubank pelo NodeJS ([Baseado na versão py](https://github.com/andreroggeri/pynubank))
 
+## Ponto de atenção
+O Nubank pode trancar a sua conta por 72 horas caso detecte algum comportamento anormal !!
+Por conta disso, evite enviar muitas requisições. 
+
 ## Instalação
 
 ```js
 //instalando dependências necessárias
 yarn install
 ```
-
-## Ponto de atenção
-O Nubank pode trancar a sua conta por 72 horas caso detecte algum comportamento anormal !!
-Por conta disso, evite enviar muitas requisições. 
 
 ## Configuração
 Crie um arquivo `.env` na raiz do projeto, adicionando seu CPF (sem pontos ou traços) e sua senha. Por exemplo:
@@ -28,11 +28,11 @@ module.exports = {
 
 #### Cartão de Crédito
 
-Primeiro é necessário gerar um QRCode e fazer a autenticação pelo aplicativo da Nubank. O código a baixo irá gerar a string de validação e o QRCode para ser lido. 
+Primeiro é necessário fazer a leitura do `QRCode` gerado pelo aplicativo da Nubank.
 
-É necessário copiar essa string de validação para usar na autenticação.
+Ao fazer a leitura do `QRCode`, pressione algum tecla para continuar a autenticação.
 
-Após fazer a leitura do QRCode pelo aplicativo da Nubank. Coloque a string na função de autenticação.
+Após a autenticação é só chamar as funções que desejar.
 
 ## Utilizando (via browser)
 
@@ -47,29 +47,28 @@ Leitura do QRCode
 ```js
 const Nubank = require('./nubank/nubank')
 const env    = require('./.env')
+const fs     = require('fs')
+
+async function press_any_key (message) {
+  console.log(message)
+
+  process.stdin.setRawMode(true)
+  fs.readSync(0, Buffer.alloc(1), 0, 1)
+}
 
 async function main () {
   const nu = new Nubank()
   await nu.start()
 
-  // Essa função irá retornar uma string de autenticação
-  // e irá imprimir no terminal o QRCode para ser lido
-  // pelo aplicativo da Nubank
-  await nu.get_qr_code_terminal()
-```
+  // Gera um QRCode no terminal para ser lido pelo aplicativo e um identificador
+  const uuid = await nu.get_qr_code()
 
-Autenticação na Nubank após a leitura do QRCode (lembrar de adicionar a string gerada)
-
-```js
-const Nubank = require('./nubank/nubank')
-const env    = require('./.env')
-
-async function main () {
-  const nu = new Nubank()
-  await nu.start()
+  // Pausa o script enquanto aguarda a leitura do QRCode
+  await press_any_key('Pressione algum tecla quando terminar de ler o QRCode pelo app da Nubank')
   
   // Função de autenticação
   const authenticate = await nu.authenticate(env.CPF, env.PASS, 'string_de_autenticao_aqui')
+  
   // Imprime um JSON de reposta, informando se a autenticação
   // foi realizada com sucesso.
   console.log(authenticate)
