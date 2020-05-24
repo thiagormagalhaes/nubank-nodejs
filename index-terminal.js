@@ -10,7 +10,7 @@ async function main () {
   const uuid = await nu.get_qr_code()
 
   // Pausa o script enquanto aguarda a leitura do QRCode
-  await lib.press_any_key('Pressione algum tecla quando terminar de ler o QRCode pelo app da Nubank')
+  await lib.press_any_key('Pressione alguma tecla quando terminar de ler o QRCode pelo app da Nubank')
 
   // Função de autenticação
   const authenticate = await nu.authenticate(env.CPF, env.PASS, uuid)
@@ -20,7 +20,10 @@ async function main () {
 
   // Lista de objetos contendo todas as movimentações de seu cartão de crédito
   const get_card_feed = await nu.get_card_feed()
+  // Imprimir no console
   console.log(get_card_feed)
+  // Salvar em arquivo
+  lib.write_file(get_card_feed, 'card_feed.js')
 }
 
 main()

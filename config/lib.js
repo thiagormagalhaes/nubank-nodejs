@@ -1,6 +1,8 @@
 const axios = require('axios')
 const fs    = require('fs')
 
+const PATH = 'download/'
+
 async function get_data (url) {
   try {
     const response = await axios.get(url)
@@ -17,7 +19,19 @@ async function press_any_key (message) {
   fs.readSync(0, Buffer.alloc(1), 0, 1)
 }
 
+async function read_file (filename) {
+  let rawdata = fs.readFileSync(PATH + filename);
+  return JSON.parse(rawdata)
+}
+
+async function write_file (data, filename) {
+  let json = JSON.stringify(data);
+  fs.writeFileSync(PATH + filename, json);
+}
+
 module.exports = {
   get_data,
-  press_any_key
+  press_any_key,
+  read_file,
+  write_file
 }

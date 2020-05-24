@@ -30,7 +30,7 @@ module.exports = {
 
 Primeiro é necessário fazer a leitura do `QRCode` gerado pelo aplicativo da Nubank.
 
-Ao fazer a leitura do `QRCode`, pressione algum tecla para continuar a autenticação.
+Ao fazer a leitura do `QRCode`, pressione alguma tecla para continuar a autenticação.
 
 Após a autenticação é só chamar as funções que desejar.
 
@@ -75,7 +75,10 @@ async function main () {
 
   // Lista de objetos contendo todas as movimentações de seu cartão de crédito
   const get_card_feed = await nu.get_card_feed()
+  // Imprimir no console
   console.log(get_card_feed)
+  // Salvar em arquivo
+  lib.write_file(get_card_feed, 'card_feed.js')
 }
 
 main()
