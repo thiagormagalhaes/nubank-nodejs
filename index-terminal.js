@@ -12,8 +12,11 @@ async function main () {
   // Imprime um JSON de reposta, informando se a autenticação foi realizada com sucesso
   console.log(authenticate)
 
-  const response = await nu.card_group_month()
+  const response = await nu.get_bills()
+  //const response = await nu.card_group_month(null, true, 'card_feed.json')
+
   console.log(response)
+
 }
 
 main()

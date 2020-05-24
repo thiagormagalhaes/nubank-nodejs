@@ -227,6 +227,37 @@ module.exports = class Nubank {
     return response.data.events
   }
 
+  async get_bills (date) {
+    if (this.bills_url == null)
+      return {
+        status: 404,
+        statusText: 'Autenticação não encontrada'
+      }
+
+    let bill = []
+
+    const response = await axios.get(this.bills_url, { headers: this.headers })
+
+    await response.data.bills.map((row, indice) => {
+      let open_date = new Date(row.summary.open_date)
+      let close_date = new Date(row.summary.close_date)
+
+      if (date >= open_date && date < close_date) {
+        bill.push(row)
+      }
+    })
+
+    if (date)
+      return bill
+    else
+      return response.data.bills
+  }
+
+  async get_bill_details (bill) {
+    const response = await axios.get(bill._links.self.href, { headers: this.headers })
+    return response.data
+  }
+
   async get_url_test (url) {
     const response = await axios.get(url, { headers: this.headers })
     return response
