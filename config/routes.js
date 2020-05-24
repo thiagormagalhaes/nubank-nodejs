@@ -13,7 +13,21 @@ module.exports = function (app) {
     res.json({ 
       about: 'Recupera informações do Nubank',
       github: 'https://github.com/thiagormagalhaes',
-      versao: '1.0.0' 
+      version: '1.0.0',
+      link: [
+        {
+          url: 'http://localhost:3333/qrcode',
+          description: 'Gera o QRCode para ser lido pelo app da Nubank'
+        },
+        {
+          url: 'http://localhost:3333/authenticate',
+          description: 'Faz o login no Nubank'
+        },
+        {
+          url: 'http://localhost:3333/card/',
+          description: 'Extrato do Nubank'
+        },
+      ]
     })
   })
 

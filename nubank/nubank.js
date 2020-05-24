@@ -205,6 +205,12 @@ module.exports = class Nubank {
   }
 
   async get_card_feed () {
+    if (this.feed_url == null)
+      return {
+        status: 404,
+        statusText: 'Autenticação não encontrada'
+      }
+
     const response = await axios.get(this.feed_url, { headers: this.headers })
     return response.data.events
   }
