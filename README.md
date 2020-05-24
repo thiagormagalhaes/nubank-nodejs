@@ -53,14 +53,8 @@ async function main () {
   const nu = new Nubank()
   await nu.start()
 
-  // Gera um QRCode no terminal para ser lido pelo aplicativo e um identificador
-  const uuid = await nu.get_qr_code()
-
-  // Pausa o script enquanto aguarda a leitura do QRCode
-  await lib.press_any_key('Pressione algum tecla quando terminar de ler o QRCode pelo app da Nubank')
-  
-  // Função de autenticação
-  const authenticate = await nu.authenticate(env.CPF, env.PASS, 'string_de_autenticao_aqui')
+  // Função de autenticação com QRCode
+  const authenticate = await nu.authenticate_with_qr_code(env.CPF, env.PASS)
   
   // Imprime um JSON de reposta, informando se a autenticação
   // foi realizada com sucesso.
