@@ -49,13 +49,6 @@ const Nubank = require('./nubank/nubank')
 const lib    = require('./config/lib')
 const env    = require('./.env')
 
-async function press_any_key (message) {
-  console.log(message)
-
-  process.stdin.setRawMode(true)
-  fs.readSync(0, Buffer.alloc(1), 0, 1)
-}
-
 async function main () {
   const nu = new Nubank()
   await nu.start()
