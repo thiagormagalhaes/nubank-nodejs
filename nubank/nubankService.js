@@ -25,8 +25,14 @@ const card = async (req, res) => {
   res.send(response)
 }
 
+const card_group = async (req, res) => {
+  const response = await req.app.locals.nubank.card_group_month(req.params.month, true)
+  res.send(response)
+}
+
 module.exports = {
   qr_code,
   authenticate,
-  card
+  card,
+  card_group
 }

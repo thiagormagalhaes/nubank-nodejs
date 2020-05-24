@@ -31,7 +31,7 @@ async function read_file (filename) {
 
 async function write_file (data, filename) {
   let json = JSON.stringify(data);
-  fs.writeFileSync(PATH + filename, json);
+  fs.writeFileSync(PATH + filename, json, 'utf8');
 }
 
 module.exports = {

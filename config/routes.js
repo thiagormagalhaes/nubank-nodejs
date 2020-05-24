@@ -8,6 +8,7 @@ module.exports = function (app) {
   app.get('/qrcode', Nubank.qr_code)
   app.get('/authenticate', Nubank.authenticate)
   app.get('/card', Nubank.card)
+  app.get(['/card/group/:month', '/card/group'], Nubank.card_group)
 
   app.all('*', (req, res) => {
     res.json({ 

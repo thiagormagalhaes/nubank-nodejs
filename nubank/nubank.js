@@ -8,12 +8,17 @@ module.exports = class Nubank {
 
   DISCOVERY_URL = 'https://prod-s0-webapp-proxy.nubank.com.br/api/discovery'
   DISCOVERY_APP_URL = 'https://prod-s0-webapp-proxy.nubank.com.br/api/app/discovery'
-  auth_url = null
-  feed_url = null
+
   proxy_list_url = null
   proxy_list_app_url = null
+
+  auth_url = null
+  feed_url = null
   query_url = null
   bills_url = null
+  account_url = null
+  userinfo_url = null
+
   uuid = null
   refresh_token_before = null
   headers = null
@@ -104,17 +109,21 @@ module.exports = class Nubank {
     this.feed_url = data['_links']['events']['href']
     this.query_url = data['_links']['ghostflame']['href']
     this.bills_url = data['_links']['bills_summary']['href']
+    this.account_url = data['_links']['account']['href']
+    this.userinfo_url = data['_links']['userinfo']['href']
   }
 
   async authenticate (cpf, password, uuid, save) {
     if (uuid)
       this.uuid = uuid
-    else {
+
+    // O this.uuid pode ter sido setado diretamente pela chamada da função get_uuid()
+    // então ele pode existir, mesmo que não tenha sido passado por parâmetro
+    if (!this.uuid)
       return {
         status: 404,
         statusText: 'QRCode não foi encontrado'
       }
-    }
 
     let auth_data = await this.password_auth(cpf, password)
 
@@ -130,7 +139,9 @@ module.exports = class Nubank {
       lib.write_file({
         feed_url: this.feed_url,
         query_url: this.query_url,
-        bills_url: this.bills_url
+        bills_url: this.bills_url,
+        account_url: this.account_url,
+        userinfo_url: this.userinfo_url
       }, 'urls.json')
     }
 
@@ -170,6 +181,7 @@ module.exports = class Nubank {
     this.feed_url = url.feed_url
     this.query_url = url.query_url
     this.bills_url = url.bills_url
+    this.account_url = url.account_url
   }
 
   async authenticate_with_qr_code (cpf, password, save) {
@@ -213,6 +225,61 @@ module.exports = class Nubank {
 
     const response = await axios.get(this.feed_url, { headers: this.headers })
     return response.data.events
+  }
+
+  async get_url_test (url) {
+    const response = await axios.get(url, { headers: this.headers })
+    return response
+  }
+
+  async get_account () {
+    if (this.account_url == null)
+      return {
+        status: 404,
+        statusText: 'Autenticação não encontrada'
+      }
+
+    const response = await axios.get(this.account_url, { headers: this.headers })
+    return response.data
+  }
+
+  async get_user_info () {
+    if (this.userinfo_url == null)
+      return {
+        status: 404,
+        statusText: 'Autenticação não encontrada'
+      }
+
+    const response = await axios.get(this.userinfo_url, { headers: this.headers })
+    return response.data
+  }
+
+  async card_group_month (month, load_file, filename) {
+    let card = null
+
+    if (load_file)
+      card = await lib.read_file(filename)
+    else
+      card = await this.get_card_feed()
+
+    let group = {}
+    let total = 0
+
+    const now = new Date()
+
+    card.map((t) => {
+      let time = new Date(t.time)
+      if (t.category === 'transaction' && time.getMonth() === now.getMonth() && time.getFullYear() === now.getFullYear()) {
+        group[t.title] = group[t.title] ? group[t.title] + (t.amount) : (t.amount)
+        total += t.amount
+      }
+    })
+
+    return {
+      'mes': now.getMonth(),
+      'total': total,
+      'group': group
+    }
   }
 
 } 
