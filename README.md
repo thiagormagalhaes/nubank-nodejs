@@ -46,8 +46,8 @@ Leitura do QRCode
 
 ```js
 const Nubank = require('./nubank/nubank')
+const lib    = require('./config/lib')
 const env    = require('./.env')
-const fs     = require('fs')
 
 async function press_any_key (message) {
   console.log(message)
@@ -64,7 +64,7 @@ async function main () {
   const uuid = await nu.get_qr_code()
 
   // Pausa o script enquanto aguarda a leitura do QRCode
-  await press_any_key('Pressione algum tecla quando terminar de ler o QRCode pelo app da Nubank')
+  await lib.press_any_key('Pressione algum tecla quando terminar de ler o QRCode pelo app da Nubank')
   
   // Função de autenticação
   const authenticate = await nu.authenticate(env.CPF, env.PASS, 'string_de_autenticao_aqui')
