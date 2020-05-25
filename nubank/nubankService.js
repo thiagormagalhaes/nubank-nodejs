@@ -30,9 +30,20 @@ const card_group = async (req, res) => {
   res.send(response)
 }
 
+const bill = async (req, res) => {
+  const response = await req.app.locals.nubank.get_bills()
+  res.send(response)
+}
+
+const bill_details = async (req, res) => {
+  const response = await req.app.locals.nubank.get_bill_details()
+  res.send(response)
+}
+
 module.exports = {
   qr_code,
   authenticate,
   card,
-  card_group
+  card_group,
+  bill
 }
