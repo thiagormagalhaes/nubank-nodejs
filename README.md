@@ -37,8 +37,11 @@ Após a autenticação é só chamar as funções que desejar.
 ## Utilizando (via browser)
 
 ```js
-  // Irei adicionar depois como fazer isso
+  // Startar servidor
+  node .\index.js
 ```
+
+Depois que o servidor estiver rodando, basta acessar o link: [http://localhost:3333/](http://localhost:3333/)
 
 ## Utilizando (via terminal)
 
