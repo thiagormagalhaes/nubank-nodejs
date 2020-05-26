@@ -182,6 +182,7 @@ module.exports = class Nubank {
     this.query_url = url.query_url
     this.bills_url = url.bills_url
     this.account_url = url.account_url
+    this.userinfo_url = url.userinfo_url
   }
 
   async authenticate_with_qr_code (cpf, password, save) {
@@ -276,6 +277,9 @@ module.exports = class Nubank {
 
   async get_user_info () {
     if (this.userinfo_url == null)
+      this.load_urls()
+
+    if (this.userinfo_url == null)
       return {
         status: 404,
         statusText: 'Autenticação não encontrada'
@@ -283,34 +287,6 @@ module.exports = class Nubank {
 
     const response = await axios.get(this.userinfo_url, { headers: this.headers })
     return response.data
-  }
-
-  async card_group_month (month, load_file, filename) {
-    let card = null
-
-    if (load_file)
-      card = await lib.read_file(filename)
-    else
-      card = await this.get_card_feed()
-
-    let group = {}
-    let total = 0
-
-    const now = new Date()
-
-    card.map((t) => {
-      let time = new Date(t.time)
-      if (t.category === 'transaction' && time.getMonth() === now.getMonth() && time.getFullYear() === now.getFullYear()) {
-        group[t.title] = group[t.title] ? group[t.title] + (t.amount) : (t.amount)
-        total += t.amount
-      }
-    })
-
-    return {
-      'mes': now.getMonth(),
-      'total': total,
-      'group': group
-    }
   }
 
 } 

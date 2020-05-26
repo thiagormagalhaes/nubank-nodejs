@@ -25,18 +25,46 @@ const card = async (req, res) => {
   res.send(response)
 }
 
-const card_group = async (req, res) => {
-  const response = await req.app.locals.nubank.card_group_month(req.params.month, true)
-  res.send(response)
+const find_bill_by_date = async (date, bills) => {
+  const d = new Date(date)
+
+  let response = []
+
+  await bills.map((row) => {
+    let open_date = new Date(row.summary.open_date)
+    let close_date = new Date(row.summary.close_date)
+
+    if (d >= open_date && d < close_date)
+      response.push(row)
+  })
+
+  return response
 }
 
 const bill = async (req, res) => {
-  const response = await req.app.locals.nubank.get_bills()
+  let response
+  
+  const bills = await req.app.locals.nubank.get_bills()
+
+  if (req.params.date) {
+    response = await find_bill_by_date(req.params.date, bills)
+  } else {
+    response = bills
+  }
+
   res.send(response)
 }
 
 const bill_details = async (req, res) => {
-  const response = await req.app.locals.nubank.get_bill_details()
+  const bills = await req.app.locals.nubank.get_bills()
+
+  const bill = await find_bill_by_date(req.params.date, bills)
+
+  let response = []
+  
+  if (bill.length > 0)
+    response = await req.app.locals.nubank.get_bill_details(bill[0])
+
   res.send(response)
 }
 
@@ -44,6 +72,6 @@ module.exports = {
   qr_code,
   authenticate,
   card,
-  card_group,
-  bill
+  bill,
+  bill_details
 }
