@@ -77,7 +77,7 @@ main()
 
 #### [Funções](https://github.com/thiagormagalhaes/nubank-nodejs/blob/master/doc/function.md)
 
-As funções são referentes a classe [Nubank](https://github.com/thiagormagalhaes/nubank-nodejs/blob/master/nubank/nubank.js), utilizada para a extração de dados da `Nubank`.
+As funções são referentes a [Class Nubank](https://github.com/thiagormagalhaes/nubank-nodejs/blob/master/nubank/nubank.js), utilizada para a extração de dados da `Nubank`.
 
 #### [Rotas](https://github.com/thiagormagalhaes/nubank-nodejs/blob/master/doc/routes.md)
 
